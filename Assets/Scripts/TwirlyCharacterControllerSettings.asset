@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3255b51e74624f649bd4148606f6d3bf, type: 3}
   m_Name: TwirlyCharacterControllerSettings
   m_EditorClassIdentifier: 
+  nodeLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  triggerCheckRadius: 0
   gaitMode: 0
   fixedGait: 2
   adjustableGaitRange: {x: 0.2, y: 2}
@@ -41,9 +45,9 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   angularVelocityMode: 1
-  changeDirectionOnChangingLeg: 1
+  changeDirectionOnChangingLeg: 0
   fixedAngularVelocity: 300
   inputImpulse: 500
-  linearAngularDrag: 2
+  linearAngularDrag: 0
   quadraticAngularDrag: 0.01
   velocityMultiplierOnChangingLeg: -1

@@ -1,6 +1,10 @@
 using UnityEngine;
 
 public class TwirlyCharacterControllerSettings : ScriptableObject {
+    public LayerMask nodeLayerMask;
+    public float triggerCheckRadius = 0.25f;
+    
+    [Space]
     public GaitMode gaitMode;
     public enum GaitMode {
         Fixed,
@@ -16,6 +20,7 @@ public class TwirlyCharacterControllerSettings : ScriptableObject {
     public AngularVelocityMode angularVelocityMode;
     public enum AngularVelocityMode {
         Fixed,
+        FlipFlop,
         Adjustable,
     }
     public bool changeDirectionOnChangingLeg;

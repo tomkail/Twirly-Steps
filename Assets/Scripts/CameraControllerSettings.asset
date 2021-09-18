@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: CameraControllerSettings
+  m_EditorClassIdentifier: Assembly-CSharp::CameraControllerSettings
+  defaultCameraProperties:
+    targetPoint: {x: 0, y: 0, z: 0}
+    axis: {x: 0, y: 0, z: 0, w: 0}
+    distance: 5
+    worldEulerAngles: {x: 42, y: 0}
+    localEulerAngles: {x: 0, y: 0, z: 0}
+    viewportOffset: {x: 0, y: 0.125}
+    fieldOfView: 60
+    orthographic: 0
+    orthographicSize: 0
+  panSmoothTimeOverDistanceFromTarget:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 5
+      inSlope: -1
+      outSlope: -1
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 4
+      inSlope: -1.0800864
+      outSlope: -1.0800864
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.12589414
+    - serializedVersion: 3
+      time: 4
+      value: 1.5
+      inSlope: -0.5606346
+      outSlope: -0.5606346
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.25643778
+    - serializedVersion: 3
+      time: 6
+      value: 1.0000044
+      inSlope: -0.2499978
+      outSlope: -0.2499978
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panMaxSpeed: 6
+  rotationSmoothDamp: 1.5
+  rotationMaxSpeed: 90

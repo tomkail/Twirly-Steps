@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using InControl;
 
-public class TwirlyCharacterController : MonoBehaviour {
+public class TwirlyCharacterController : MonoSingleton<TwirlyCharacterController> {
     public TwirlyCharacterControllerSettings settings;
     public Leg leftLeg;
     public Leg rightLeg;
+    public Leg pivotLeg => usingLeftLeg ? leftLeg : rightLeg;
+    public Leg swingingLeg => !usingLeftLeg ? leftLeg : rightLeg;
     
     [Space]
     public bool usingLeftLeg;
@@ -15,7 +18,13 @@ public class TwirlyCharacterController : MonoBehaviour {
     [Space]
     public LineRenderer lineRenderer;
     
+    void OnEnable () {
+        angularVelocity = settings.fixedAngularVelocity;
+
+        // moveDirection = Vector3.Slerp(moveDirection, Vector3.Normalize(cameraTarget - pivotLeg.transform.position), Time.deltaTime);
+    }
     void Update() {
+
         if(settings.angularVelocityMode == TwirlyCharacterControllerSettings.AngularVelocityMode.Fixed) {
             angularVelocity = settings.fixedAngularVelocity;
             if(settings.changeDirectionOnChangingLeg)
@@ -46,23 +55,81 @@ public class TwirlyCharacterController : MonoBehaviour {
             gait = settings.gaitOverAngularVelocity.Evaluate(Mathf.Abs(angularVelocity));
         }
 
-        if(Input.GetKeyDown(KeyCode.Space)) {
-            usingLeftLeg = !usingLeftLeg;
-            if(settings.angularVelocityMode == TwirlyCharacterControllerSettings.AngularVelocityMode.Adjustable) {
-                angularVelocity *= settings.velocityMultiplierOnChangingLeg;
-            }
-            if(settings.changeDirectionOnChangingLeg) {
-                angularVelocity *= -1;
+        // if(Input.GetKeyDown(KeyCode.Space)) {
+        //     usingLeftLeg = !usingLeftLeg;
+        //     if(settings.angularVelocityMode == TwirlyCharacterControllerSettings.AngularVelocityMode.Adjustable) {
+        //         angularVelocity *= settings.velocityMultiplierOnChangingLeg;
+        //     }
+        //     if(settings.changeDirectionOnChangingLeg) {
+        //         angularVelocity *= -1;
+        //     }
+        // }
+
+        var peg = IsLegInTrigger(swingingLeg.transform);
+        if(InputManager.ActiveDevice.Action1.WasPressed || Input.GetKeyDown(KeyCode.Q)) {
+            if(peg == null) {
+                angularVelocity = -angularVelocity;
+            } else {
+                SetPivotPosition(peg.position);
+                usingLeftLeg = !usingLeftLeg;
+                angularVelocity = settings.fixedAngularVelocity * (usingLeftLeg ? 1 : -1);
             }
         }
-        if(usingLeftLeg) {
-            UpdateForLeg(leftLeg, rightLeg);
-        } else {
-            UpdateForLeg(rightLeg, leftLeg);
+        if(Input.GetKeyDown(KeyCode.W)) {
+            if(peg == null) {
+                angularVelocity = -angularVelocity;
+            } else {
+                angularVelocity = settings.fixedAngularVelocity * -Mathf.Sign(angularVelocity);
+            }
         }
+        if(InputManager.ActiveDevice.Action2.WasPressed || InputManager.ActiveDevice.DPadDown.WasPressed || Input.GetKeyDown(KeyCode.Space)) {
+            if(peg == null) {
+                angularVelocity = -angularVelocity;
+            } else {
+                SetPivotPosition(peg.position);
+                usingLeftLeg = !usingLeftLeg;
+                angularVelocity = settings.fixedAngularVelocity * Mathf.Sign(angularVelocity);
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.Z)) {
+            if(peg == null) {
+                angularVelocity = -angularVelocity;
+            } else {
+                SetPivotPosition(peg.position);
+                usingLeftLeg = !usingLeftLeg;
+                angularVelocity = settings.fixedAngularVelocity * -1;
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.X)) {
+            if(peg == null) {
+                angularVelocity = -angularVelocity;
+            } else {
+                SetPivotPosition(peg.position);
+                usingLeftLeg = !usingLeftLeg;
+                angularVelocity = settings.fixedAngularVelocity * 1;
+            }
+        }
+        
+        // if(settings.angularVelocityMode == TwirlyCharacterControllerSettings.AngularVelocityMode.FlipFlop) {
+        // }
+
+        UpdateForLeg(pivotLeg, swingingLeg);
 
         lineRenderer.SetPosition(0, leftLeg.transform.position);
         lineRenderer.SetPosition(1, rightLeg.transform.position);
+    }
+
+    Transform IsLegInTrigger (Transform leg) {
+        var overlap = Physics.OverlapSphere(leg.position, settings.triggerCheckRadius, settings.nodeLayerMask, QueryTriggerInteraction.Collide);
+        if(overlap.Length > 0) {
+            return overlap[0].transform;
+        }
+        return null;
+    }
+
+    void SetPivotPosition (Vector3 position) {
+        var pivotLeg = !usingLeftLeg ? leftLeg : rightLeg;
+        pivotLeg.transform.position = position;
     }
 
     float DoLinearDrag (float angularVelocity, float linearDragConst) {

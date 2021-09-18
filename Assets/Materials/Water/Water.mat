@@ -38,11 +38,11 @@ Material:
     - _FarDistance: 40
     - _NearDistance: 10
     - _Translucency: 1.225
-    - _WaveAmp: 0.5
+    - _WaveAmp: 1
     - _WaveSpeed: 100.6
     m_Colors:
-    - _DeepColor: {r: 0.1137255, g: 0.29411766, b: 0.46274513, a: 1}
-    - _FarColor: {r: 0.1254902, g: 0.29803923, b: 0.454902, a: 1}
+    - _DeepColor: {r: 0.6037736, g: 0.21575613, b: 0.14524741, a: 1}
+    - _FarColor: {r: 0.6698113, g: 0.06783607, b: 0.022116425, a: 1}
     - _FoamColor: {r: 1, g: 1, b: 1, a: 1}
-    - _NearColor: {r: 0.53333336, g: 1, b: 0.8745099, a: 1}
+    - _NearColor: {r: 1, g: 0.37099686, b: 0.24056602, a: 1}
   m_BuildTextureStacks: []
