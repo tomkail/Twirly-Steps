@@ -70,7 +70,7 @@ public class TwirlyCharacterController : MonoSingleton<TwirlyCharacterController
             if(peg == null) {
                 angularVelocity = -angularVelocity;
             } else {
-                SetPivotPosition(peg.position);
+                SetPivotPosition(peg.transform.position);
                 usingLeftLeg = !usingLeftLeg;
                 angularVelocity = settings.fixedAngularVelocity * (usingLeftLeg ? 1 : -1);
             }
@@ -86,16 +86,17 @@ public class TwirlyCharacterController : MonoSingleton<TwirlyCharacterController
             if(peg == null) {
                 angularVelocity = -angularVelocity;
             } else {
-                SetPivotPosition(peg.position);
+                SetPivotPosition(peg.transform.position);
                 usingLeftLeg = !usingLeftLeg;
                 angularVelocity = settings.fixedAngularVelocity * Mathf.Sign(angularVelocity);
+                if(peg.reverseDirection) angularVelocity *= -1;
             }
         }
         if(Input.GetKeyDown(KeyCode.Z)) {
             if(peg == null) {
                 angularVelocity = -angularVelocity;
             } else {
-                SetPivotPosition(peg.position);
+                SetPivotPosition(peg.transform.position);
                 usingLeftLeg = !usingLeftLeg;
                 angularVelocity = settings.fixedAngularVelocity * -1;
             }
@@ -104,7 +105,7 @@ public class TwirlyCharacterController : MonoSingleton<TwirlyCharacterController
             if(peg == null) {
                 angularVelocity = -angularVelocity;
             } else {
-                SetPivotPosition(peg.position);
+                SetPivotPosition(peg.transform.position);
                 usingLeftLeg = !usingLeftLeg;
                 angularVelocity = settings.fixedAngularVelocity * 1;
             }
@@ -119,10 +120,10 @@ public class TwirlyCharacterController : MonoSingleton<TwirlyCharacterController
         lineRenderer.SetPosition(1, rightLeg.transform.position);
     }
 
-    Transform IsLegInTrigger (Transform leg) {
+    Peg IsLegInTrigger (Transform leg) {
         var overlap = Physics.OverlapSphere(leg.position, settings.triggerCheckRadius, settings.nodeLayerMask, QueryTriggerInteraction.Collide);
         if(overlap.Length > 0) {
-            return overlap[0].transform;
+            return overlap[0].GetComponent<Peg>();
         }
         return null;
     }
