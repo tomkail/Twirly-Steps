@@ -46,7 +46,44 @@ MonoBehaviour:
     m_RotationOrder: 4
   angularVelocityMode: 1
   changeDirectionOnChangingLeg: 0
-  fixedAngularVelocity: 300
+  fixedAngularVelocity: 250
+  comboVelocityAdditive: 30
+  comboCap: 7
+  comboFadeSpeed: 1
+  comboGainOnStep: 1
+  angularVelocityOverCombo:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 225
+      inSlope: 74.60606
+      outSlope: 74.60606
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.30793992
+    - serializedVersion: 3
+      time: 1
+      value: 290
+      inSlope: 39.583332
+      outSlope: 39.583332
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 7
+      value: 375
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
   inputImpulse: 500
   linearAngularDrag: 0
   quadraticAngularDrag: 0.01

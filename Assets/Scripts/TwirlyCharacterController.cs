@@ -16,14 +16,28 @@ public class TwirlyCharacterController : MonoSingleton<TwirlyCharacterController
     public float gait;
     
     [Space]
+    public float stepCombo;
+    public float stepComboResetTime = 0.75f;
+    public float stepComboTimer = Mathf.Infinity;
+    
+    [Space]
     public LineRenderer lineRenderer;
     
     void OnEnable () {
+        stepComboTimer = Mathf.Infinity;
         angularVelocity = settings.fixedAngularVelocity;
-
         // moveDirection = Vector3.Slerp(moveDirection, Vector3.Normalize(cameraTarget - pivotLeg.transform.position), Time.deltaTime);
     }
+
     void Update() {
+        if(stepComboTimer != Mathf.Infinity) {
+            stepComboTimer -= Time.deltaTime;
+            if(stepComboTimer < 0) {
+                stepComboTimer = Mathf.Infinity;
+                ResetCombo();
+            }
+        }
+        stepCombo = Mathf.Max(0, stepCombo-settings.comboFadeSpeed*Time.deltaTime);
 
         if(settings.angularVelocityMode == TwirlyCharacterControllerSettings.AngularVelocityMode.Fixed) {
             angularVelocity = settings.fixedAngularVelocity;
@@ -69,47 +83,53 @@ public class TwirlyCharacterController : MonoSingleton<TwirlyCharacterController
         if(InputManager.ActiveDevice.Action1.WasPressed || Input.GetKeyDown(KeyCode.Q)) {
             if(peg == null) {
                 angularVelocity = -angularVelocity;
+                MissStep();
             } else {
                 SetPivotPosition(peg.transform.position);
                 usingLeftLeg = !usingLeftLeg;
-                angularVelocity = settings.fixedAngularVelocity * (usingLeftLeg ? 1 : -1);
+                angularVelocity = ApplyCombo(settings.fixedAngularVelocity) * (usingLeftLeg ? 1 : -1);
             }
         }
         if(Input.GetKeyDown(KeyCode.W)) {
             if(peg == null) {
                 angularVelocity = -angularVelocity;
+                MissStep();
             } else {
-                angularVelocity = settings.fixedAngularVelocity * -Mathf.Sign(angularVelocity);
+                angularVelocity = ApplyCombo(settings.fixedAngularVelocity) * -Mathf.Sign(angularVelocity);
             }
         }
         if(InputManager.ActiveDevice.Action2.WasPressed || InputManager.ActiveDevice.DPadDown.WasPressed || Input.GetKeyDown(KeyCode.Space)) {
             if(peg == null) {
                 angularVelocity = -angularVelocity;
+                MissStep();
             } else {
                 SetPivotPosition(peg.transform.position);
                 usingLeftLeg = !usingLeftLeg;
-                angularVelocity = settings.fixedAngularVelocity * Mathf.Sign(angularVelocity);
+                angularVelocity = ApplyCombo(settings.fixedAngularVelocity) * Mathf.Sign(angularVelocity);
                 if(peg.reverseDirection) angularVelocity *= -1;
             }
         }
         if(Input.GetKeyDown(KeyCode.Z)) {
             if(peg == null) {
                 angularVelocity = -angularVelocity;
+                MissStep();
             } else {
                 SetPivotPosition(peg.transform.position);
                 usingLeftLeg = !usingLeftLeg;
-                angularVelocity = settings.fixedAngularVelocity * -1;
+                angularVelocity = ApplyCombo(settings.fixedAngularVelocity) * -1;
             }
         }
         if(Input.GetKeyDown(KeyCode.X)) {
             if(peg == null) {
                 angularVelocity = -angularVelocity;
+                MissStep();
             } else {
                 SetPivotPosition(peg.transform.position);
                 usingLeftLeg = !usingLeftLeg;
-                angularVelocity = settings.fixedAngularVelocity * 1;
+                angularVelocity = ApplyCombo(settings.fixedAngularVelocity) * 1;
             }
         }
+        angularVelocity = ApplyCombo(settings.fixedAngularVelocity) * Mathf.Sign(angularVelocity);
         
         // if(settings.angularVelocityMode == TwirlyCharacterControllerSettings.AngularVelocityMode.FlipFlop) {
         // }
@@ -118,6 +138,19 @@ public class TwirlyCharacterController : MonoSingleton<TwirlyCharacterController
 
         lineRenderer.SetPosition(0, leftLeg.transform.position);
         lineRenderer.SetPosition(1, rightLeg.transform.position);
+    }
+
+    void ResetCombo () {
+        stepCombo = Mathf.Max(stepCombo-1,0);
+        angularVelocity = ApplyCombo(settings.fixedAngularVelocity) * Mathf.Sign(angularVelocity);
+    }
+    void AddCombo () {
+        // stepComboTimer = stepComboResetTime;
+        stepCombo = Mathf.Min(settings.comboCap, stepCombo+settings.comboGainOnStep);
+    }
+    float ApplyCombo (float speed) {
+        return settings.angularVelocityOverCombo.Evaluate(stepCombo);
+        return speed + settings.comboVelocityAdditive*stepCombo;
     }
 
     Peg IsLegInTrigger (Transform leg) {
@@ -131,6 +164,12 @@ public class TwirlyCharacterController : MonoSingleton<TwirlyCharacterController
     void SetPivotPosition (Vector3 position) {
         var pivotLeg = !usingLeftLeg ? leftLeg : rightLeg;
         pivotLeg.transform.position = position;
+        AddCombo();
+        StepAudio.Instance.Play();
+    }
+
+    void MissStep () {
+        ResetCombo();
     }
 
     float DoLinearDrag (float angularVelocity, float linearDragConst) {

@@ -25,6 +25,11 @@ public class TwirlyCharacterControllerSettings : ScriptableObject {
     }
     public bool changeDirectionOnChangingLeg;
     public float fixedAngularVelocity = 1000;
+    public float comboVelocityAdditive = 150;
+    public int comboCap = 5;
+    public float comboFadeSpeed = 1;
+    public float comboGainOnStep = 1;
+    public AnimationCurve angularVelocityOverCombo;
     public float inputImpulse = 1000;
     public float linearAngularDrag = 3;
     public float quadraticAngularDrag = 3;
